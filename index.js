@@ -3,7 +3,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
 import cors from 'cors';
-//import router from './routes/router.js';
+import routerEvents from './routes/events.js';
 
 import dotenv from 'dotenv';
 
@@ -14,10 +14,10 @@ const app = express();
 app.use(bodyParser.json({ limit: '30mb', extended: true }))
 app.use(bodyParser.urlencoded({ limit: '30mb', extended: true }))
 app.use(cors());
-//conecting to a BD
-// app.use('/movements',movementsRouter);
-// app.use('/jars',jarsRouter);
-// app.use('/transactions',transactionsRouter);
+
+
+app.use('/events',routerEvents);
+
 
 //initial greeting
 app.get('/',(req,res)=>{ res.send('Hello to the fff Aplication')});
