@@ -4,6 +4,7 @@ import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import routerEvents from './routes/events.js';
+import routerUsers from './routes/users.js';
 
 import dotenv from 'dotenv';
 
@@ -17,6 +18,7 @@ app.use(cors());
 
 
 app.use('/events',routerEvents);
+app.use('/users',routerUsers);
 
 
 //initial greeting
