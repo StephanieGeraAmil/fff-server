@@ -1,29 +1,27 @@
 import UserModel from "../models/UserModel.js";
 import mongoose from 'mongoose';
-export const getUsers = async (req,res) =>{
+export const getUsersByEmail = async (req,res) =>{
+ const {email:userEmail}=req.params;
+ 
+   try{ 
    
-   if(Object.keys(req.body).length !== 0){
-  
-      const userEmail=req.body;
-      
-      try{ 
-      
-         const user= await UserModel.findOne( userEmail );
-            console.log(user);
-         res.status(200).json(user); 
-      
-      }catch(error){
-         res.status(404).json({message:error.message});
-      }
+      const user= await UserModel.findOne( {email:userEmail} );
+      res.status(200).json(user); 
+   
+   }catch(error){
+      res.status(404).json({message:error.message});
+   }
+}
+export const getUsers = async (req,res) =>{
 
-   }else{
+ 
       try{ 
          const users= await UserModel.find(); 
          res.status(200).json(users); 
       }catch(error){
       res.status(404).json({message:error.message});
       }
-   }
+   
 }
 
 export const createUsers=async (req,res) =>{

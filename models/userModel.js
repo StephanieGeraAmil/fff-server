@@ -4,7 +4,6 @@ const userSchema= mongoose.Schema(
     {
         name: {type:String, required:true},
         email: {type:String, required:true},
-        events:  {type:Array, default:[]},
         chats:  {type:Array, default:[]},
         birthdate:{type:Date,default:new Date()},
         gender:{type:String, default:''},
