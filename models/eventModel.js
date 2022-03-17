@@ -11,6 +11,7 @@ const eventSchema= mongoose.Schema(
         date:{type:Date, default:new Date()},
         users:  {type:Array, default:[]},
         creator: {type:String, required:true},
+        chat: {type:String, default:''},
      
     }
 )
