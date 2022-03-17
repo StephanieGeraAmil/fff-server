@@ -6,6 +6,7 @@ import cors from 'cors';
 import routerEvents from './routes/events.js';
 import routerUsers from './routes/users.js';
 import routerChats from './routes/chats.js';
+import routerMessages from './routes/messages.js';
 
 import dotenv from 'dotenv';
 
@@ -21,6 +22,7 @@ app.use(cors());
 app.use('/events',routerEvents);
 app.use('/users',routerUsers);
 app.use('/chats',routerChats);
+app.use('/messages',routerMessages);
 
 
 //initial greeting
