@@ -1,27 +1,27 @@
-import EventModel from "../models/eventModel.js";
+import ChatModel from "../models/chatModel.js";
 import mongoose from 'mongoose';
-export const getEvents = async (req,res) =>{
+export const getChats = async (req,res) =>{
    try{ 
-       const events= await EventModel.find();
+       const chats= await ChatModel.find();
       
-        res.status(200).json(events); 
+        res.status(200).json(chats); 
    }catch(error){
      res.status(404).json({message:error.message});
    }
 }
-export const createEvents=async (req,res) =>{
+export const createChats=async (req,res) =>{
    const ev=req.body;
-   const newEvent= new EventModel(ev);
+   const newChat= new ChatModel(ev);
     
     try { 
-        await newEvent.save();
+        await newChat.save();
        
-        res.status(201).json(newEvent);
+        res.status(201).json(newChat);
    }catch(error){
   res.status(409).json({message:error.message});
    }
 }
-export const updateEvent=async (req,res) =>{
+export const updateChat=async (req,res) =>{
 
    const {id:_id}=req.params;
    const updated=req.body;
@@ -29,22 +29,22 @@ export const updateEvent=async (req,res) =>{
    
    
   try{
-    const updatedEvent= await EventModel.findByIdAndUpdate(_id,updated,{new:true});
-    res.status(204).json(updatedEvent);
+    const updatedChat= await ChatModel.findByIdAndUpdate(_id,updated,{new:true});
+    res.status(204).json(updatedChat);
    }catch(error){
       
    res.status(409).json({message:error.message});
    }
 }
 
-export const deleteEvent=async (req,res) =>{
+export const deleteChat=async (req,res) =>{
    const {id:_id}=req.params;
  
    if(!mongoose.Types.ObjectId.isValid(_id)) return res.status(404).json({message:"invalid id"});
    
    try{
-    const deleteEvent= await EventModel.deleteOne({ _id:_id });
-    res.status(204).json(deleteEvent);
+    const deleteChat= await ChatModel.deleteOne({ _id:_id });
+    res.status(204).json(deleteChat);
    }catch(error){
       res.status(409).json({message:error.message});
    }

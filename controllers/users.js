@@ -34,6 +34,7 @@ export const createUsers=async (req,res) =>{
         res.status(201).json(newUser);
    }catch(error){
   res.status(409).json({message:error.message});
+
    }
 }
 export const updateUser=async (req,res) =>{
