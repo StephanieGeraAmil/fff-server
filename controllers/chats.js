@@ -9,6 +9,16 @@ export const getChats = async (req,res) =>{
      res.status(404).json({message:error.message});
    }
 }
+export const getChatsFromUser = async (req,res) =>{
+     const {id:_id}=req.params;
+   try{ 
+       const chats= await ChatModel.find({"users":{$elemMatch: {_id:_id}}});
+      
+        res.status(200).json(chats); 
+   }catch(error){
+     res.status(404).json({message:error.message});
+   }
+}
 export const createChats=async (req,res) =>{
    const ev=req.body;
    const newChat= new ChatModel(ev);
