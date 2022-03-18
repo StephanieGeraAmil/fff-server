@@ -1,4 +1,5 @@
 import EventModel from "../models/eventModel.js";
+import ChatModel from "../models/chatModel.js";
 import mongoose from 'mongoose';
 export const getEvents = async (req,res) =>{
    try{ 
@@ -12,8 +13,15 @@ export const getEvents = async (req,res) =>{
 export const createEvents=async (req,res) =>{
    const ev=req.body;
    const newEvent= new EventModel(ev);
+   
+   const cht={users:newEvent.users, img:newEvent.img };
+   const newChat= new ChatModel(cht);
+   
     
     try { 
+        const chat =await newChat.save();
+        newEvent.chat=chat._id;
+      
         await newEvent.save();
        
         res.status(201).json(newEvent);
