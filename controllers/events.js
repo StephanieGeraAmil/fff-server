@@ -13,8 +13,9 @@ export const getEvents = async (req,res) =>{
 export const createEvents=async (req,res) =>{
    const ev=req.body;
    const newEvent= new EventModel(ev);
+
    
-   const cht={users:newEvent.users, img:newEvent.img };
+   const cht={users:newEvent.users, img:newEvent.img , title:newEvent.title  };
    const newChat= new ChatModel(cht);
    
     
