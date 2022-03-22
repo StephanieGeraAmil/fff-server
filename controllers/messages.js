@@ -10,6 +10,18 @@ export const getMessages = async (req,res) =>{
      res.status(404).json({message:error.message});
    }
 }
+export const getMessagesFromChat = async (req,res) =>{
+   const {id:_id}=req.params;
+   try{ 
+      const chat=await ChatModel.findById(_id)
+       const messages= chat.messages;
+      
+        res.status(200).json(messages); 
+   }catch(error){
+     res.status(404).json({message:error.message});
+   }
+}
+
 export const createMessages=async (req,res) =>{
    const msg=req.body;
    const cht={'_id':msg.chat};
