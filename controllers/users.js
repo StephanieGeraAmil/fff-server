@@ -1,4 +1,4 @@
-import UserModel from "../models/UserModel.js";
+import UserModel from "../models/userModel.js";
 import mongoose from 'mongoose';
 export const getUsersByEmail = async (req,res) =>{
  const {email:userEmail}=req.params;

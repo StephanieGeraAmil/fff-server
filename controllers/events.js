@@ -1,5 +1,6 @@
 import EventModel from "../models/eventModel.js";
 import ChatModel from "../models/chatModel.js";
+import UserModel from "../models/userModel.js";
 import mongoose from 'mongoose';
 export const getEvents = async (req,res) =>{
    try{ 
@@ -34,12 +35,36 @@ export const updateEvent=async (req,res) =>{
 
    const {id:_id}=req.params;
    const updated=req.body;
-   if(!mongoose.Types.ObjectId.isValid(_id)) return res.status(404).json({message:"invalid id"});
-   
+   const task=updated.task;
+   const user=updated.user;
+   if(!mongoose.Types.ObjectId.isValid(_id)) return res.status(404).json({message:"invalid event id"});
+   let updatedEvent={};
    
   try{
-    const updatedEvent= await EventModel.findByIdAndUpdate(_id,updated,{new:true});
-    res.status(204).json(updatedEvent);
+     if(task && user){
+         if(!mongoose.Types.ObjectId.isValid(user)) return res.status(404).json({message:"invalid user id"});
+         const usr=await UserModel.findById(user);
+         const event=await EventModel.findById(_id);
+         const alreadyInEvent=event.users.find(item=>item._id==user)
+    
+        
+         if (task=='addUser'&&!alreadyInEvent){   
+          
+            updatedEvent=await EventModel.findByIdAndUpdate(_id,{ $push: { users: usr } },{new:true}) 
+            await ChatModel.findByIdAndUpdate(event.chat,{ $push: { users: usr } },{new:true}) 
+         }else{
+            if(task=='deleteUser'&&alreadyInEvent){
+           
+             updatedEvent= await EventModel.findByIdAndUpdate(_id,{ $pull: { users: usr } },{new:true})
+              await ChatModel.findByIdAndUpdate(event.chat,{ $pull: { users: usr } },{new:true})
+            }
+         }
+     }else{
+         updatedEvent= await EventModel.findByIdAndUpdate(_id,updated,{new:true});    
+     }
+      res.status(204).json(updatedEvent);
+
+    
    }catch(error){
       
    res.status(409).json({message:error.message});
@@ -49,7 +74,7 @@ export const updateEvent=async (req,res) =>{
 export const deleteEvent=async (req,res) =>{
    const {id:_id}=req.params;
  
-   if(!mongoose.Types.ObjectId.isValid(_id)) return res.status(404).json({message:"invalid id"});
+   if(!mongoose.Types.ObjectId.isValid(_id)) return res.status(404).json({message:"invalid event id"});
    
    try{
     const deleteEvent= await EventModel.deleteOne({ _id:_id });
