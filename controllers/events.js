@@ -84,4 +84,13 @@ export const deleteEvent=async (req,res) =>{
    }
         
 }
+export const deleteAllEvents=async (req,res)=>{
+     try{ 
+       await EventModel.deleteMany({});
+      
+        res.status(200).json("all events deleted"); 
+   }catch(error){
+     res.status(404).json({message:error.message});
+   }
+}
 

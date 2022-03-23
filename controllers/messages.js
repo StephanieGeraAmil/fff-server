@@ -65,4 +65,13 @@ export const deleteMessage=async (req,res) =>{
    }
         
 }
+export const deleteAllMessages=async (req,res)=>{
+     try{ 
+       await MessageModel.deleteMany({});
+      
+        res.status(200).json("all messages deleted"); 
+   }catch(error){
+     res.status(404).json({message:error.message});
+   }
+}
 

@@ -64,4 +64,13 @@ export const deleteUser=async (req,res) =>{
    }
         
 }
+export const deleteAllUsers=async (req,res)=>{
+     try{ 
+       await UserModel.deleteMany({});
+      
+        res.status(200).json("all users deleted"); 
+   }catch(error){
+     res.status(404).json({message:error.message});
+   }
+}
 

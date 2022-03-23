@@ -60,4 +60,13 @@ export const deleteChat=async (req,res) =>{
    }
         
 }
+export const deleteAllChats=async (req,res)=>{
+     try{ 
+       await ChatModel.deleteMany({});
+      
+        res.status(200).json("all chats deleted"); 
+   }catch(error){
+     res.status(404).json({message:error.message});
+   }
+}
 
