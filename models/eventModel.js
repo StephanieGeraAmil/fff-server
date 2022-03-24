@@ -9,7 +9,6 @@ const eventSchema= mongoose.Schema(
         lat:{type:Number, default:0.0},
         lng:{type:Number, default:0.0},
         date:{type:Date, default:new Date()},
-        users:  {type:Array, default:[]},
         creator: {type:String, required:true},
         chat: {type:String, default:''},
      

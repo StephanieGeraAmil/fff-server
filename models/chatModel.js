@@ -8,8 +8,6 @@ const chatSchema= mongoose.Schema(
         messages:  {type:Array, default:[]},
         users: {type:Array, default:[]},
         
-       
-     
     }
 )
 

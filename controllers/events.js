@@ -13,20 +13,22 @@ export const getEvents = async (req,res) =>{
 }
 export const createEvents=async (req,res) =>{
    const ev=req.body;
-   const newEvent= new EventModel(ev);
 
-   
-   const cht={users:newEvent.users, img:newEvent.img , title:newEvent.title  };
+  
+   if(!ev.creator||!ev.title)return res.status(404).json({message:"user and title are needed to create an Event"});
+    try { 
+   const creator= await UserModel.findById(ev.creator);
+   const newEvent= new EventModel(ev);
+   const cht={users:creator, img:newEvent.img , title:newEvent.title  };
    const newChat= new ChatModel(cht);
    
     
-    try { 
+   
         const chat =await newChat.save();
         newEvent.chat=chat._id;
-      
         await newEvent.save();
-       
         res.status(201).json(newEvent);
+
    }catch(error){
   res.status(409).json({message:error.message});
    }
@@ -45,29 +47,25 @@ export const updateEvent=async (req,res) =>{
          if(!mongoose.Types.ObjectId.isValid(user)) return res.status(404).json({message:"invalid user id"});
          const usr=await UserModel.findById(user);
          const event=await EventModel.findById(_id);
-         const alreadyInEvent=event.users.find(item=>item._id==user)
-    
-        
+         const cht=await ChatModel.findById(event.chat);
+         const alreadyInEvent=cht.users.find(item=>item._id==user);  
          if (task=='addUser'&&!alreadyInEvent){   
           
-            updatedEvent=await EventModel.findByIdAndUpdate(_id,{ $push: { users: usr } },{new:true}) 
-            await ChatModel.findByIdAndUpdate(event.chat,{ $push: { users: usr } },{new:true}) 
+           // updatedEvent=await EventModel.findByIdAndUpdate(_id,{ $push: { users: usr } },{new:true});
+            await ChatModel.findByIdAndUpdate(event.chat,{ $push: { users: usr } },{new:true}); 
          }else{
             if(task=='deleteUser'&&alreadyInEvent){
            
-             updatedEvent= await EventModel.findByIdAndUpdate(_id,{ $pull: { users: usr } },{new:true})
-              await ChatModel.findByIdAndUpdate(event.chat,{ $pull: { users: usr } },{new:true})
+            // updatedEvent= await EventModel.findByIdAndUpdate(_id,{ $pull: { users: usr } },{new:true});
+              await ChatModel.findByIdAndUpdate(event.chat,{ $pull: { users: usr } },{new:true});
             }
          }
      }else{
          updatedEvent= await EventModel.findByIdAndUpdate(_id,updated,{new:true});    
      }
-      res.status(204).json(updatedEvent);
-
-    
-   }catch(error){
-      
-   res.status(409).json({message:error.message});
+      res.status(204).json(updatedEvent);  
+   }catch(error){ 
+      res.status(409).json({message:error.message});
    }
 }
 
@@ -77,8 +75,10 @@ export const deleteEvent=async (req,res) =>{
    if(!mongoose.Types.ObjectId.isValid(_id)) return res.status(404).json({message:"invalid event id"});
    
    try{
-    const deleteEvent= await EventModel.deleteOne({ _id:_id });
-    res.status(204).json(deleteEvent);
+      const eventToDelete= await EventModel.findById({ _id:_id });
+      await ChatModel.deleteOne({ _id:eventToDelete.chat });
+      const deleteEvent= await EventModel.deleteOne({ _id:_id });
+      res.status(204).json(deleteEvent);
    }catch(error){
       res.status(409).json({message:error.message});
    }
@@ -86,9 +86,9 @@ export const deleteEvent=async (req,res) =>{
 }
 export const deleteAllEvents=async (req,res)=>{
      try{ 
-       await EventModel.deleteMany({});
-      
-        res.status(200).json("all events deleted"); 
+         
+         await EventModel.deleteMany({});
+         res.status(200).json("all events deleted"); 
    }catch(error){
      res.status(404).json({message:error.message});
    }
