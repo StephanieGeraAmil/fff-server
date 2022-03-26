@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 
+
 const eventSchema= mongoose.Schema(
     {
         title: {type:String, required:true},
@@ -10,7 +11,7 @@ const eventSchema= mongoose.Schema(
         lng:{type:Number, default:0.0},
         date:{type:Date, default:new Date()},
         creator: {type:String, required:true},
-        chat: {type:String, default:''},
+        chat: {type:String, default:[]}
      
     }
 )
