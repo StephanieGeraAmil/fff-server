@@ -12,7 +12,7 @@ export const getChatsOfUser = async (req,res) =>{
      const {id:_id}=req.params;
    try{ 
       console.log(_id);
-      const chats= await ChatModel.find({"users": { $elemMatch:{_id:_id}}});
+      const chats= await ChatModel.find({"users":{ "$in": [_id]} });
       console.log(chats);
 
 //       const blogPost = await BlogPost.findOne({ title: 'Weather' })

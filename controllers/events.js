@@ -14,15 +14,34 @@ export const getEvents = async (req,res) =>{
 
 export const getEventsOfUser=async (req,res)=>{
    const {id:_id}=req.params;
+   let eventsWithuserInfo=[];
+  
    try{       
-         const chatsOfUser= await ChatModel.find({"users": { $elemMatch:{_id:_id}}},_id);
+         const chatsOfUser=  await ChatModel.find({"users":{ "$in": [_id]} });
+         console.log('chatsOfUser')
+         console.log(chatsOfUser)
+        
          const events=await EventModel.find();
-         const eventsOfUser=[];
+           let result={};
          events.map(event=>{
-               if(chatsOfUser.includes(event.chat)){eventsOfUser.push(event)}
-         })
+                   console.log('event chat')
+                  console.log(event.chat)
+                
+               if(JSON.stringify(chatsOfUser).includes(event.chat))
+               {
+           
+                   result= {...event._doc, hasTheUser:true};
+                 
+               }else{
+                   result= {...event._doc, hasTheUser:false};
+               }
+               eventsWithuserInfo.push(result);
 
-         res.status(200).json(events); 
+         });
+          console.log(' eventsWithuserInfo')
+                  console.log(eventsWithuserInfo)
+
+         res.status(200).json(eventsWithuserInfo); 
    }catch(error){
      res.status(404).json({message:error.message});
    }
