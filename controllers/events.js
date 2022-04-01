@@ -76,8 +76,7 @@ export const updateEvent=async (req,res) =>{
          await EventModel.findByIdAndUpdate(_id,updated, {new: true});    
      }
      const updated= await EventModel.findById(_id)
-     console.log(updated);
-      res.status(200).json(updated);  
+     res.status(200).json(updated);  
    }catch(error){ 
       res.status(409).json({message:error.message});
    }
