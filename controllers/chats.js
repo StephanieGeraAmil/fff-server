@@ -11,22 +11,7 @@ export const getChats = async (req,res) =>{
 export const getChatsOfUser = async (req,res) =>{
      const {id:_id}=req.params;
    try{ 
-      console.log(_id);
       const chats= await ChatModel.find({"users":{ "$in": [_id]} });
-      console.log(chats);
-
-//       const blogPost = await BlogPost.findOne({ title: 'Weather' })
-//   .populate('comments')
-
-
-// const commentPromises = commentIDs.map(_id => {
-//   return Comment.findOne({ _id })
-// }) 
-// const comments = await Promise.all(commentPromises)
-
-// const comments = await Comment.find({
-//     '_id': { $in: commentIDs }
-// })
       res.status(200).json(chats); 
    }catch(error){
      res.status(404).json({message:error.message});
