@@ -65,19 +65,17 @@ export const deleteUser=async (req,res) =>{
    try{
          ///I delete all events that were created by that user (I should add a way too transfer pwnership later)
          const eventToDelete=await EventModel.find({"creator":_id});
-         //I delete the chats asociated with those events first
-         eventToDelete.map(async(e)=>{
-           const id_chat= e.toObject().chat;
-           //I delete the messages asociated with that chat
-           const chat=await ChatModel.findById(id_chat);
-           const messagesId=chat.messages;
-           messagesId.map(async(msgId)=>{
-                await MessageModel.deleteOne({ _id:msgId});
-           })
-           await ChatModel.deleteOne({ _id:id_chat});
-           
-
-         })
+         //I delete the chats asociated with those events first ( I use for instead of map because map doesn't wait for the awits to be resolved)
+          for (let e of eventToDelete) {
+                  const id_chat= e.toObject().chat;
+                  //I delete the messages asociated with that chat
+                  const chat=await ChatModel.findById(id_chat);
+                  const messagesId=chat.messages;
+                  messagesId.map(async(msgId)=>{
+                        await MessageModel.deleteOne({ _id:msgId});
+                  })
+                  await ChatModel.deleteOne({ _id:id_chat});   
+               }
          await EventModel.deleteMany({'creator':_id});
 
         //I delete the user from all chats that he is part of
