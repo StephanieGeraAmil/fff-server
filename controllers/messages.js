@@ -1,9 +1,5 @@
 import MessageModel from "../models/messageModel.js";
 import ChatModel from "../models/chatModel.js";
-//import ObjectId from "mongoose"
-
-
-//const OId = ObjectId.Types.ObjectId; 
 
 import mongoose from 'mongoose';
 
@@ -40,11 +36,15 @@ export const createMessages=async (req,res) =>{
     try { 
         const message= await newMessage.save();
         await ChatModel.findByIdAndUpdate(cht,{ $push: { messages: message._id } },{new:true})
+         
+        req.io.sockets.emit('created_message', message); 
         res.status(201).json(message);
    }catch(error){
        res.status(409).json({message:error.message});
    }
 }
+
+
 export const updateMessage=async (req,res) =>{
    const {id:_id}=req.params;
    const updated=req.body;
