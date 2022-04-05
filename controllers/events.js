@@ -1,6 +1,10 @@
 import EventModel from "../models/eventModel.js";
 import ChatModel from "../models/chatModel.js";
+import MessageModel from "../models/messageModel.js";
+
+
 import mongoose from 'mongoose';
+
 
 export const getEvents = async (req,res) =>{
    try{ 
@@ -16,7 +20,7 @@ export const getEventsOfUser=async (req,res)=>{
    let eventsWithuserInfo=[];
   
    try{       
-         const chatsOfUser=  await ChatModel.find({"users":{ "$in": [_id]} });
+         const chatsOfUser=  await ChatModel.find({"users":_id });
          const events=await EventModel.find();
          let result={};
          events.map(event=>{
@@ -89,6 +93,11 @@ export const deleteEvent=async (req,res) =>{
    
    try{
       const eventToDelete= await EventModel.findById({ _id:_id });
+      //I delete the chat asociated with that Event and I first delete all messages asociated with that chat that I'm about to delete
+      const chatAsociated= await ChatModel.findOne({ _id:eventToDelete.chat });
+      const messagesIdAsociatedWithChat=chatAsociated.messages;
+      
+      await MessageModel.deleteMany({_id:{"$in":messagesIdAsociatedWithChat}})
       await ChatModel.deleteOne({ _id:eventToDelete.chat });
       const deleteEvent= await EventModel.deleteOne({ _id:_id });
       res.status(200).json(deleteEvent);
@@ -98,9 +107,10 @@ export const deleteEvent=async (req,res) =>{
 }
 export const deleteAllEvents=async (req,res)=>{
      try{ 
-         
+         await MessageModel.deleteMany({});
+         await ChatModel.deleteMany({});
          await EventModel.deleteMany({});
-         res.status(200).json("all events deleted"); 
+         res.status(200).json("all events, chats and Messages deleted"); 
    }catch(error){
      res.status(404).json({message:error.message});
    }

@@ -1,7 +1,11 @@
 import UserModel from "../models/userModel.js";
 import EventModel from "../models/eventModel.js";
 import ChatModel from "../models/chatModel.js";
+
 import mongoose from 'mongoose';
+import MessageModel from "../models/messageModel.js";
+
+
 export const getUsersByEmail = async (req,res) =>{
  const {email:userEmail}=req.params;
  
@@ -59,18 +63,28 @@ export const deleteUser=async (req,res) =>{
    if(!mongoose.Types.ObjectId.isValid(_id)) return res.status(404).json({message:"invalid id"});
    
    try{
-         const eventToDelete=await EventModel.findOne({"creator":_id});
-         const id_chat=eventToDelete.toObject().chat;
-         
-      if(eventToDelete){
-            await ChatModel.deleteOne({_id:id_chat});  
-            await EventModel.deleteOne({'creator':_id});
-      }else{
-         const userToDelete= await UserModel.findById(_id); 
-         await ChatModel.updateMany({"users":{$elemMatch: userToDelete}},{ $pull: { users: userToDelete} },{new:true});
-      } 
-      const deleteUser= await UserModel.deleteOne({ _id:_id });
-      res.status(204).json(deleteUser);
+         ///I delete all events that were created by that user (I should add a way too transfer pwnership later)
+         const eventToDelete=await EventModel.find({"creator":_id});
+         //I delete the chats asociated with those events first
+         eventToDelete.map(async(e)=>{
+           const id_chat= e.toObject().chat;
+           //I delete the messages asociated with that chat
+           const chat=await ChatModel.findById(id_chat);
+           const messagesId=chat.messages;
+           messagesId.map(async(msgId)=>{
+                await MessageModel.deleteOne({ _id:msgId});
+           })
+           await ChatModel.deleteOne({ _id:id_chat});
+           
+
+         })
+         await EventModel.deleteMany({'creator':_id});
+
+        //I delete the user from all chats that he is part of
+         await ChatModel.updateMany({"users":_id},{ $pull: { users: _id} },{new:true});
+         //I delete the user
+         const deleteUser= await UserModel.deleteOne({ _id:_id });
+         res.status(204).json(deleteUser);
 
      
    }catch(error){
@@ -78,12 +92,8 @@ export const deleteUser=async (req,res) =>{
    }
         
 }
-export const deleteAllUsers=async (req,res)=>{
-     try{ 
-         await UserModel.deleteMany({});
-         res.status(200).json("all users deleted"); 
-   }catch(error){
-     res.status(404).json({message:error.message});
-   }
-}
+
+//deleting all users is like deleting all DB because everithing is asociated with a user... 
+
+
 

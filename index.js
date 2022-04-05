@@ -7,6 +7,7 @@ import routerEvents from './routes/events.js';
 import routerUsers from './routes/users.js';
 import routerChats from './routes/chats.js';
 import routerMessages from './routes/messages.js';
+import routerGeneral from './routes/general.js';
 
 import dotenv from 'dotenv';
 
@@ -23,6 +24,7 @@ app.use('/events',routerEvents);
 app.use('/users',routerUsers);
 app.use('/chats',routerChats);
 app.use('/messages',routerMessages);
+app.use('/general',routerGeneral);
 
 
 //initial greeting
