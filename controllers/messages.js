@@ -1,9 +1,9 @@
 import MessageModel from "../models/messageModel.js";
 import ChatModel from "../models/chatModel.js";
-import ObjectId from "mongoose"
+//import ObjectId from "mongoose"
 
 
-const OId = ObjectId.Types.ObjectId; 
+//const OId = ObjectId.Types.ObjectId; 
 
 import mongoose from 'mongoose';
 
@@ -19,14 +19,15 @@ export const getMessagesFromChat = async (req,res) =>{
    const {id:_id}=req.params;
    try{ 
       const chat=await ChatModel.findById(_id)
-   
+      let messagesFromChat=[];
       const messagesIds= chat.messages;
-      let messages=[];
-      messagesIds.map(async(msg)=>{
-         const message=await MessageModel.findById(msg);
-         messages.push(message);
-      });
-      res.status(200).json(messages); 
+      for (let item of messagesIds) {
+          const msg= await  MessageModel.findById(item.toString());
+         messagesFromChat.push(msg);
+
+      }
+   
+      res.status(200).json(messagesFromChat); 
    }catch(error){
      res.status(404).json({message:error.message});
    }
@@ -61,7 +62,7 @@ export const deleteMessage=async (req,res) =>{
    if(!mongoose.Types.ObjectId.isValid(_id)) return res.status(404).json({message:"invalid id"}); 
    try{
       //I delete the message from the chat that is part of
-      await ChatModel.updateOne({messages:new OId(_id)},{ $pull: { messages:new OId( _id)} },{new:true});
+      await ChatModel.updateOne({messages:_id.toObject()},{ $pull: { messages: _id.toObject()} },{new:true});
 
       const deleteMessage= await MessageModel.deleteOne({ _id:_id });
       res.status(204).json(deleteMessage);
