@@ -28,10 +28,18 @@ const options = {
 };
 const io =new  Server(httpServer, options);
 io.on("connection", socket => {  
-    console.log("connected") ;
-    socket.on('echo', (data)=> {
-                        io.emit('message', data);
-                        });
+    console.log(socket.id) ;
+    socket.on("message-sent",(obj,chat)=>{
+                console.log(obj)
+                console.log(chat)
+                //boradcast instead of  io.emit so the sender is not notified
+                // socket.broadcast.emit('new-message',obj)
+                //to already does the boradcast 
+                socket.to(chat).emit('new-message',obj)
+              
+                }
+        );
+
     });
 
 
@@ -49,15 +57,12 @@ app.use('/messages',routerMessages);
 app.use('/general',routerGeneral);
 
 
+
 //initial greeting
 app.get('/',(req,res)=>{ res.send('Hello to the fff Aplication')});
 
 
-// Make io accessible to our router
-app.use(function(req,res,next){
-    req.io = io;
-    next();
-});
+
 
 
 
@@ -68,6 +73,8 @@ mongoose.connect(CONNECTION_URL,{useNewUrlParser:true, useUnifiedTopology:true})
 .then(()=>httpServer.listen(PORT,()=> console.log(`server running on port: ${PORT}`)))
 .catch((error)=>console.log(error.message));
 
+
+export {io};
 
 
 

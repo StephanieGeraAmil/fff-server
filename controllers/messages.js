@@ -1,5 +1,6 @@
 import MessageModel from "../models/messageModel.js";
 import ChatModel from "../models/chatModel.js";
+ import {io} from '../index.js';
 
 import mongoose from 'mongoose';
 
@@ -36,8 +37,9 @@ export const createMessages=async (req,res) =>{
     try { 
         const message= await newMessage.save();
         await ChatModel.findByIdAndUpdate(cht,{ $push: { messages: message._id } },{new:true})
-         
-        req.io.sockets.emit('created_message', message); 
+        
+        io.emit('new-message', message);
+     
         res.status(201).json(message);
    }catch(error){
        res.status(409).json({message:error.message});
