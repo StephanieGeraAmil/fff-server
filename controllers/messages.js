@@ -4,40 +4,7 @@ import ChatModel from "../models/chatModel.js";
 
 import mongoose from 'mongoose';
 
-
-// io.on("connection", socket => {  
-//     console.log(socket.id) ;
-//     socket.on("get-last-100-messages",async (obj,chat)=>{
-                
-//                  try{ 
-//                     const chat=await ChatModel.findById(_id)
-//                     let messagesFromChat=[];
-//                     const messagesIds= chat.messages;
-//                     for (let item of messagesIds) {
-//                         const msg= await  MessageModel.findById(item.toString());
-//                         messagesFromChat.push(msg);
-
-//                     }
-//                     socket.to(chat).emit('last-100-messgaes-from-chat',messagesFromChat)
-                   
-//                 }catch(error){
-//                     res.status(404).json({message:error.message});
-//                 }
-//      });
-//     socket.on("message-sent",(obj,chat)=>{
-//                 console.log(obj)
-//                 console.log(chat)
-//                 //boradcast instead of  io.emit so the sender is not notified
-//                 // socket.broadcast.emit('new-message',obj)
-//                 //to already does the boradcast 
-//                 socket.to(chat).emit('message-created',obj)
-              
-//                 }
-//         );
-
-//     });
-
-
+import {io} from '../index.js';
 
 
 export const getMessages = async (req,res) =>{
@@ -118,5 +85,54 @@ export const deleteAllMessages=async (req,res)=>{
    }catch(error){
      res.status(404).json({message:error.message});
    }
+}
+
+
+export const init=()=> {
+
+      io.on("connection", socket => {  
+       try{ 
+            socket.on("get-last-100-messages",async (chat_id)=>{
+                        
+                        try{ 
+                            socket.join(chat_id);
+                           
+                            const chat=await ChatModel.findById(chat_id);
+                            let messagesFromChat=[];
+                            const messagesIds= chat.messages;
+                            for (let item of messagesIds) {
+                                const msg= await  MessageModel.findById(item.toString());
+                                messagesFromChat.push(msg);
+                            } 
+                        //if boradcast instead of  io.emit so the sender is not notified
+                        //socket.broadcast.emit('new-message',obj)
+                        //to already does the boradcast 
+                            io.in(chat_id).emit('last-100-messgaes-from-chat',messagesFromChat)
+                        
+                        }catch(error){
+                            console.log({message:error.message});
+                        } 
+            });
+            socket.on("message-sent",async (obj,chat_id)=>{
+                       
+                        try{ 
+                            const cht={'_id':chat_id};
+                            const newMessage= new MessageModel({content:obj.content, sender: obj.sender});  
+                            const message= await newMessage.save();
+                            await ChatModel.findByIdAndUpdate(cht,{ $push: { messages: message._id } },{new:true})  
+                            io.in(chat_id).emit('message-created', message);
+                           
+                        
+                        }catch(error){
+                             console.log({message:error.message});
+                        }
+                    }
+                );
+         }catch(error){
+                    console.log({message:error.message});
+                }
+    });
+
+
 }
 
