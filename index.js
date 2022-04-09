@@ -8,10 +8,12 @@ import routerUsers from './routes/users.js';
 import routerChats from './routes/chats.js';
 import routerMessages from './routes/messages.js';
 import routerGeneral from './routes/general.js';
+import MessageModel from "./models/messageModel.js";
+import ChatModel from "./models/chatModel.js";
+import {init} from './socketio.js' 
+
 import { createServer } from "http";
 import { Server } from "socket.io";
-
-
 
 
 import dotenv from 'dotenv';
@@ -23,27 +25,54 @@ const app = express();
 const httpServer = createServer(app);
 const options = {
     cors: {
-                origin: '*',
-            }
+        origin: '*',
+        }
 };
 const io =new  Server(httpServer, options);
-io.on("connection", socket => {  
-    console.log(socket.id) ;
-    socket.on("message-sent",(obj,chat)=>{
-                console.log(obj)
-                console.log(chat)
-                //boradcast instead of  io.emit so the sender is not notified
-                // socket.broadcast.emit('new-message',obj)
-                //to already does the boradcast 
-                socket.to(chat).emit('new-message',obj)
-              
+  io.on("connection", socket => {  
+       try{ 
+            socket.on("get-last-100-messages",async (chat_id)=>{
+                        
+                        try{ 
+                            socket.join(chat_id);
+                           
+                            const chat=await ChatModel.findById(chat_id);
+                            let messagesFromChat=[];
+                            const messagesIds= chat.messages;
+                            for (let item of messagesIds) {
+                                const msg= await  MessageModel.findById(item.toString());
+                                messagesFromChat.push(msg);
+                            } 
+                        //if boradcast instead of  io.emit so the sender is not notified
+                        //socket.broadcast.emit('new-message',obj)
+                        //to already does the boradcast 
+                            io.in(chat_id).emit('last-100-messgaes-from-chat',messagesFromChat)
+                        
+                        }catch(error){
+                            console.log({message:error.message});
+                        } 
+            });
+            socket.on("message-sent",async (obj,chat_id)=>{
+                       
+                        try{ 
+                            const cht={'_id':chat_id};
+                            const newMessage= new MessageModel({content:obj.content, sender: obj.sender});  
+                            const message= await newMessage.save();
+                            await ChatModel.findByIdAndUpdate(cht,{ $push: { messages: message._id } },{new:true})  
+                            io.in(chat_id).emit('message-created', message);
+                           
+                        
+                        }catch(error){
+                             console.log({message:error.message});
+                        }
+                    }
+                );
+         }catch(error){
+                    console.log({message:error.message});
                 }
-        );
-
     });
 
 
-///////
 
 app.use(bodyParser.json({ limit: '30mb', extended: true }))
 app.use(bodyParser.urlencoded({ limit: '30mb', extended: true }))
