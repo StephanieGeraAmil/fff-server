@@ -4,7 +4,7 @@ export const userSchema= mongoose.Schema(
     {
         name: {type:String, required:true},
         email: {type:String, required:true},
-        birthdate:{type:Date,default:new Date()},
+        birthDate:{type:Date},
         gender:{type:String, default:''},
         aproximatelat:{type:Number, default:0.0},
         aproximatelng:{type:Number, default:0.0},

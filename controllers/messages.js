@@ -40,8 +40,9 @@ export const createMessages=async (req,res) =>{
     try { 
         const message= await newMessage.save();
         await ChatModel.findByIdAndUpdate(cht,{ $push: { messages: message._id } },{new:true})
-        
+              console.log("just about to emmited");
         io.emit('new-message', message);
+  
      
         res.status(201).json(message);
    }catch(error){
