@@ -6,8 +6,12 @@ export const userSchema= mongoose.Schema(
         email: {type:String, required:true},
         birthDate:{type:Date},
         gender:{type:String, default:''},
-        aproximatelat:{type:Number, default:0.0},
-        aproximatelng:{type:Number, default:0.0},
+        aproxcoords: {
+                    lat: { type: Number },
+                    lng: { type: Number }
+                },
+        city: {type:String},
+       
         date:{type:Date, default:new Date()},
      
     }
