@@ -57,15 +57,19 @@ export const createEvents=async (req,res) =>{
 }
 export const updateEvent=async (req,res) =>{
 
+
    const {id:_id}=req.params;
    const updated=req.body;
+  
    const task=updated.task;
    const user=updated.userToAddOrRemove;
    if(!mongoose.Types.ObjectId.isValid(_id)) return res.status(404).json({message:"invalid event id"});
-   let updatedEvent={};
-   
+ 
+
   try{
+    
      if(task && user){
+           
          if(!mongoose.Types.ObjectId.isValid(user)) return res.status(404).json({message:"invalid user id"});
          const event=await EventModel.findById(_id);
          const cht=await ChatModel.findById(event.chat);
@@ -77,10 +81,10 @@ export const updateEvent=async (req,res) =>{
             }
          }
      }else{
-         await EventModel.findByIdAndUpdate(_id,updated, {new: true});    
+           await EventModel.findByIdAndUpdate(_id,updated, {new: true});    
      }
-     const updated= await EventModel.findById(_id)
-     res.status(200).json(updated);  
+     const  NewEvent= await EventModel.findById(_id)
+     res.status(200).json(NewEvent);  
    }catch(error){ 
       res.status(409).json({message:error.message});
    }
