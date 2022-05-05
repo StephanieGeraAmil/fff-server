@@ -8,7 +8,9 @@ import routerUsers from './routes/users.js';
 import routerChats from './routes/chats.js';
 import routerMessages from './routes/messages.js';
 import routerGeneral from './routes/general.js';
-import {init} from './controllers/messages.js' 
+// import {initMessagesSocket} from './controllers/messages.js' 
+// import {initEventsSocket} from './controllers/events.js' 
+import {init} from './controllers/socket.js' 
 
 import { createServer } from "http";
 import { Server } from "socket.io";
@@ -27,6 +29,7 @@ const options = {
 };
 const io =new  Server(httpServer, options);
 init();
+
 
 app.use(bodyParser.json({ limit: '30mb', extended: true }))
 app.use(bodyParser.urlencoded({ limit: '30mb', extended: true }))
