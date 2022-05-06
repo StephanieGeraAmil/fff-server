@@ -11,6 +11,7 @@ const eventSchema= mongoose.Schema(
         lng:{type:Number, default:0.0},
         date:{type:Date, default:new Date()},
         end_date:{type:Date, default:new Date()},
+        target_gender:{type:String, default:''},
         creator: {type:String, required:true},
         chat: {type:String, default:[]}
      
