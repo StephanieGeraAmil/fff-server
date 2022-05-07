@@ -40,7 +40,8 @@ export const init=()=> {
                 );
             socket.on("get-events-near",async ()=>{  
                         try{ 
-                           const events= await EventModel.find(); 
+                            const today=new Date();
+                           const events= await EventModel.find({end_date: {$gt: today}}); 
                            io.emit('events-near',events);
                         }catch(error){
                             console.log({message:error.message});
@@ -48,9 +49,10 @@ export const init=()=> {
             });
             socket.on("get-events-with-user-info",async (obj)=>{  
                         try{ 
+                             const today=new Date();
                               let eventsWithuserInfo=[];
                               const chatsOfUser=  await ChatModel.find({"users":obj._id });
-                              const events=await EventModel.find();
+                              const events=await EventModel.find({end_date: {$gt: today}});
                               let result={};
                               events.map(event=>{
                                     if(JSON.stringify(chatsOfUser).includes(event.chat)){ 
