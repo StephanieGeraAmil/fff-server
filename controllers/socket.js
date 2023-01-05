@@ -2,7 +2,7 @@ import MessageModel from "../models/messageModel.js";
 import ChatModel from "../models/chatModel.js";
 import EventModel from "../models/eventModel.js";
 import mongoose from 'mongoose';
-import {io} from '../index.js';
+import {io} from '../server.js';
 
 export const init=()=> {
       io.on("connection", socket => {  

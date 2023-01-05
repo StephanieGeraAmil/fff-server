@@ -8,8 +8,6 @@ import routerUsers from './routes/users.js';
 import routerChats from './routes/chats.js';
 import routerMessages from './routes/messages.js';
 import routerGeneral from './routes/general.js';
-// import {initMessagesSocket} from './controllers/messages.js' 
-// import {initEventsSocket} from './controllers/events.js' 
 import {init} from './controllers/socket.js' 
 
 import { createServer } from "http";
@@ -49,7 +47,6 @@ app.get('/',(req,res)=>{ res.send('Hello to the fff Aplication')});
 const CONNECTION_URL= process.env.CONNECTION_URL;
 const PORT= process.env.PORT||5500;
 mongoose.connect(CONNECTION_URL,{useNewUrlParser:true, useUnifiedTopology:true})
-// .then(()=>app.listen(PORT,()=> console.log(`server running on port: ${PORT}`)))
 .then(()=>httpServer.listen(PORT,()=> console.log(`server running on port: ${PORT}`)))
 .catch((error)=>console.log(error.message));
 

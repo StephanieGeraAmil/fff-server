@@ -1,7 +1,7 @@
 import EventModel from "../models/eventModel.js";
 import ChatModel from "../models/chatModel.js";
 import MessageModel from "../models/messageModel.js";
-import {io} from '../index.js';
+import {io} from '../server.js';
 
 import mongoose from 'mongoose';
 

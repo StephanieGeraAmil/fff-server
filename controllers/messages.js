@@ -1,7 +1,7 @@
 import MessageModel from "../models/messageModel.js";
 import ChatModel from "../models/chatModel.js";
 import mongoose from 'mongoose';
-import {io} from '../index.js';
+import {io} from '../server.js';
 
 
 export const getMessages = async (req,res) =>{
